@@ -14,8 +14,8 @@ public class RestaurantService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAllWithMenus();
+    public List<Restaurant> getRestaurantsByCategory(String tag) {
+        return restaurantRepository.findByCategory(tag);
     }
 
     public Restaurant getRestaurantById(int id) {
