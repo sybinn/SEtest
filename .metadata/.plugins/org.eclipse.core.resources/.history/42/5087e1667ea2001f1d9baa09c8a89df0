@@ -1,0 +1,16 @@
+package com.example.demo.entity;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "review_info")
+public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewid;
+    private String name;
+    private Integer star;
+    private String cnt;
+    @ManyToOne
+    @JoinColumn(name = "rid")
+    private Restaurant restaurant;
+}

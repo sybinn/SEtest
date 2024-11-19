@@ -1,0 +1,57 @@
+package com.example.demo.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "menu_info")
+public class Menu {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int mid;
+    
+    private String mname;
+    private double mprice;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rid")
+    @JsonIgnore
+    private Restaurant restaurant;
+
+    // Getters and Setters
+    public int getMid() {
+        return mid;
+    }
+
+    public void setMid(int mid) {
+        this.mid = mid;
+    }
+
+    public String getMname() {
+        return mname;
+    }
+
+    public void setMname(String mname) {
+        this.mname = mname;
+    }
+
+    public double getMprice() {
+        return mprice;
+    }
+
+    public void setMprice(double mprice) {
+        this.mprice = mprice;
+    }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public Integer getRid() {
+        return restaurant != null ? restaurant.getRid() : null;
+    }
+}

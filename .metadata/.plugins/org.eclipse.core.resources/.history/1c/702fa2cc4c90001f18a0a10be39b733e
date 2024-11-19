@@ -1,0 +1,34 @@
+package com.example.entity.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.example.service.*;
+import com.example.entity.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/yufood")
+public class RestaurantController {
+
+    @Autowired
+    private RestaurantService restaurantService;
+
+    @GetMapping
+    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+        return new ResponseEntity<>(restaurants, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/yufood/{restaurantId}")
+    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long restaurantId) {
+        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
+        if (restaurant != null) {
+            return new ResponseEntity<>(restaurant, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+}

@@ -1,0 +1,52 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.entity.Menu;
+import com.example.demo.entity.Restaurant;
+import com.example.demo.repository.MenuRepository;
+import com.example.demo.repository.RestaurantRepository;
+
+import java.util.List;
+
+@Service
+@Transactional(readOnly = true) // 읽기 전용 트랜잭션 설정
+public class MenuService {
+    private final MenuRepository menuRepository;
+    private final RestaurantRepository restaurantRepository;
+
+    @Autowired
+    public MenuService(MenuRepository menuRepository, RestaurantRepository restaurantRepository) {
+        this.menuRepository = menuRepository;
+        this.restaurantRepository = restaurantRepository;
+    }
+
+    // fetch join을 사용하여 N+1 문제 해결
+    public List<Menu> getMenusByRestaurantId(Integer rid) {
+        Restaurant restaurant = restaurantRepository.findById(rid)
+            .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+        
+        // fetch join을 사용하여 메뉴 조회
+        return menuRepository.findByRestaurantWithFetchJoin(rid);
+    }
+
+    @Transactional // 쓰기 작업을 위한 트랜잭션
+    public Menu addMenu(Menu menu, Integer rid) {
+        Restaurant restaurant = restaurantRepository.findById(rid)
+            .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+        menu.setRestaurant(restaurant);
+        return menuRepository.save(menu);
+    }
+
+    @Transactional
+    public void deleteMenu(Integer mid) {
+        menuRepository.deleteById(mid);
+    }
+
+    @Transactional
+    public Menu updateMenu(Menu menu) {
+        return menuRepository.save(menu);
+    }
+}

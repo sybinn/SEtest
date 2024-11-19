@@ -1,0 +1,57 @@
+package com.example.demo.entity;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "review_info")
+public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer reviewid;
+    private Integer reviewstar;
+    private String content;
+    private Integer rid;
+    private Integer userid;
+    @ManyToOne
+    @JoinColumn(name = "rid")
+    private Restaurant restaurant;
+    
+    public void setReviewid(Integer reviewid) {
+    	this.reviewid = reviewid;
+    }
+    
+    public int getReviewid() {
+    	return reviewid;
+    }
+    
+    public void setReviewstar(Integer reviewstar) {
+    	this.reviewstar = reviewstar;
+    }
+    
+    public int getReviewstar () {
+    	return reviewstar;
+    }
+    
+    public void setContent(String content) {
+    	this.content = content;
+    }
+    
+    public String getContent() {
+    	return content;
+    }
+    
+    public void setRid(Integer rid) {
+    	this.rid = rid;
+    }
+    
+    public int getRid() {
+    	return rid;
+    }
+    
+    public void setUserid(Integer userid) {
+    	this.userid = userid;
+    }
+    
+    public int getUserid() {
+    	return userid;
+    }
+}

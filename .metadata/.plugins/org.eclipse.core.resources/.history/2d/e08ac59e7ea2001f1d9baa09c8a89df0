@@ -1,0 +1,28 @@
+@Service
+public class ReviewService {
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    public Review saveReview(Review review) {
+        return reviewRepository.save(review);
+    }
+
+    public List<Review> getReviewsByRestaurantId(Long rid) {
+        return reviewRepository.findByRid(rid);
+    }
+
+    public Review updateReview(Long reviewid, Review review) {
+        Review existingReview = reviewRepository.findById(reviewid)
+            .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        
+        existingReview.setReviewstar(review.getReviewstar());
+        existingReview.setContent(review.getContent());
+        
+        return reviewRepository.save(existingReview);
+    }
+
+    public void deleteReview(Long reviewid) {
+        reviewRepository.deleteById(reviewid);
+    }
+}

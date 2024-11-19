@@ -1,0 +1,47 @@
+package com.example.demo.service;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.demo.ResourceNotFoundException;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
+
+@Service
+public class ReviewService {
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+    
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
+    public Review saveReview(Review review) {
+        // rid 값을 통해 Restaurant 엔티티를 찾아서 설정
+        Restaurant restaurant = restaurantRepository.findById(review.getRid())
+            .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + review.getRid()));
+        review.setRestaurant(restaurant);
+        return reviewRepository.save(review);
+    }
+
+    public List<Review> getReviewsByRestaurantId(Integer rid) {
+        return reviewRepository.findByRestaurantRid(rid);
+    }
+
+    public Review updateReview(Integer reviewid, Review review) {
+        Review existingReview = reviewRepository.findById(reviewid)
+            .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + reviewid));
+        
+        existingReview.setReviewstar(review.getReviewstar());
+        existingReview.setContent(review.getContent());
+        
+        return reviewRepository.save(existingReview);
+    }
+
+    public void deleteReview(Integer reviewid) {
+        if (!reviewRepository.existsById(reviewid)) {
+            throw new ResourceNotFoundException("Review not found with id: " + reviewid);
+        }
+        reviewRepository.deleteById(reviewid);
+    }
+}

@@ -1,0 +1,69 @@
+package com.example.demo.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.util.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.ResourceNotFoundException;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
+
+@Service
+public class ReviewService {
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+    
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
+    public Review saveReview(Review review) {
+        // 식당 존재 여부 확인
+        Restaurant restaurant = restaurantRepository.findById(review.getRid())
+            .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+        
+        // null 값 처리
+        review.setRestaurant(restaurant);
+        review.setUserid(ObjectUtils.isEmpty(review.getUserid()) ? 0 : review.getUserid());
+        review.setReviewstar(ObjectUtils.isEmpty(review.getReviewstar()) ? 0 : review.getReviewstar());
+        review.setContent(ObjectUtils.isEmpty(review.getContent()) ? "" : review.getContent());
+        
+        return reviewRepository.save(review);
+    }
+
+    public List<Review> getReviewsByRestaurantId(Integer rid) {
+        // 식당 존재 여부 확인
+        restaurantRepository.findById(rid)
+            .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+        
+        // 리뷰 조회 및 null 값 처리
+        List<Review> reviews = reviewRepository.findByRestaurantRid(rid);
+        return reviews.stream()
+            .map(review -> {
+                return review;
+            })
+            .collect(Collectors.toList());
+    }
+
+    public Review updateReview(Integer reviewid, Review review) {
+        Review existingReview = reviewRepository.findById(reviewid)
+            .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        
+        // null 값 처리
+        existingReview.setReviewstar(ObjectUtils.isEmpty(review.getReviewstar()) ? 
+            existingReview.getReviewstar() : review.getReviewstar());
+        existingReview.setContent(ObjectUtils.isEmpty(review.getContent()) ? 
+            existingReview.getContent() : review.getContent());
+        
+        return reviewRepository.save(existingReview);
+    }
+
+    public void deleteReview(Integer reviewid) {
+        if (!reviewRepository.existsById(reviewid)) {
+            throw new ResourceNotFoundException("Review not found");
+        }
+        reviewRepository.deleteById(reviewid);
+    }
+}
