@@ -13,4 +13,10 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Integer>
 	
 	@Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.menus")
     List<Restaurant> findAllWithMenus();
+	
+	//@Query(value = "SELECT * FROM restaurant_info WHERE rtag = :rtag ORDER BY rstar DESC LIMIT 10")
+    List<Restaurant> findTop10ByRtagOrderByRstarDesc(String rtag);
+	
+	//@Query(value = "SELECT * FROM restaurant_info WHERE rtag = :rtag AND rloc = :rloc ORDER BY rstar DESC LIMIT 10")
+    List<Restaurant> findTop10ByRtagAndRlocOrderByRstarDesc(String rtag, String rloc);
 }

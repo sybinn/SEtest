@@ -12,33 +12,62 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.ResourceNotFoundException;
+import com.example.demo.dto.ReviewDTO;
 import com.example.demo.entity.Review;
 import com.example.demo.service.*;
+import com.example.demo.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/review_info")
-@CrossOrigin(origins = "http://localhost:3000") // React 앱의 주소
+@CrossOrigin(origins = "http://localhost:3000")
 public class ReviewController {
-    
     @Autowired
     private ReviewService reviewService;
+    @Autowired
+    private JwtUtil jwtutil;
+    @Autowired
+    private StorageService storageService;
 
-    // 리뷰 생성
     @PostMapping
-    public ResponseEntity<Review> createReview(@RequestBody Review review) {
-        Review savedReview = reviewService.saveReview(review);
+    public ResponseEntity<Review> createReview(
+            @RequestParam("reviewstar") Integer reviewstar,
+            @RequestParam("content") String content,
+            @RequestParam("rid") Integer rid,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestHeader("Authorization") String token) {
+        
+        String username = jwtutil.validateTokenAndGetUsername(token.substring(7));
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        
+        Review review = new Review();
+        review.setReviewstar(reviewstar);
+        review.setContent(content);
+        review.setRid(rid);
+        
+        if (image != null && !image.isEmpty()) {
+            String filename = storageService.store(image);
+            review.setImageUrl(filename);
+        }
+        
+        Review savedReview = reviewService.saveReview(review, username);
         return new ResponseEntity<>(savedReview, HttpStatus.CREATED);
     }
 
     // 특정 식당의 모든 리뷰 조회
     @GetMapping("/restaurant/{rid}")
-    public ResponseEntity<List<Review>> getReviewsByRestaurant(@PathVariable("rid") Integer rid) {
+    public ResponseEntity<List<ReviewDTO>> getReviewsByRestaurant(@PathVariable("rid") Integer rid) {
         try {
-            List<Review> reviews = reviewService.getReviewsByRestaurantId(rid);
+            List<ReviewDTO> reviews = reviewService.getReviewsByRestaurantId(rid);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

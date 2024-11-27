@@ -22,6 +22,13 @@ public class RestaurantService {
         System.out.println("서비스 getRestaurantById 호출됨: " + id);
         return restaurantRepository.findById(id).orElse(null);
     }
+    
+    public List<Restaurant> getTop10RestaurantsByCategory(String rtag) {
+        return restaurantRepository.findTop10ByRtagOrderByRstarDesc(rtag);
+    }
+    public List<Restaurant> findTop10ByTagAndLocation(String tag, String location) {
+        return restaurantRepository.findTop10ByRtagAndRlocOrderByRstarDesc(tag, location);
+    }
 
     @Transactional
     public Restaurant createRestaurant(Restaurant restaurant) {
