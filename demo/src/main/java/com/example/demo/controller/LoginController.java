@@ -44,16 +44,16 @@ public class LoginController {
     }
 
     
-    @GetMapping("/status")
-    public ResponseEntity<?> checkStatus(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body("로그인 필요");
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "email", authentication.getName(),
-                "message", "로그인된 상태입니다."
-        ));
-    }
+//    @GetMapping("/status")
+//    public ResponseEntity<?> checkStatus(Authentication authentication) {
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            return ResponseEntity.status(401).body("로그인 필요");
+//        }
+//
+//        return ResponseEntity.ok(Map.of(
+//                "email", authentication.getName(),
+//                "message", "로그인된 상태입니다."
+//        ));
+//    }
 }
 

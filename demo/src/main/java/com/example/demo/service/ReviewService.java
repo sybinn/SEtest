@@ -16,31 +16,29 @@ import com.example.demo.entity.Review;
 @Service
 public class ReviewService {
 
-	@Autowired
-    private ReviewRepository reviewRepository;
-    
-    @Autowired
-    private UserRepository userRepository; // UserRepository 추가 필요
+	 @Autowired
+	    private ReviewRepository reviewRepository;
+	    
+	    @Autowired
+	    private UserRepository userRepository;
 
-    public Review saveReview(Review review, String username) {
-        // 토큰에서 얻은 username으로 userId 찾기
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        review.setUserid(user.getId());
-        return reviewRepository.save(review);
-    }
+	    public Review saveReview(Review review, String username) {
+	        User user = userRepository.findByUsername(username)
+	            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+	        review.setUser(user);
+	        return reviewRepository.save(review);
+	    }
 
-    public List<ReviewDTO> getReviewsByRestaurantId(Integer rid) {
-        List<Object[]> results = reviewRepository.findByRestaurantRidWithUsername(rid);
-        return results.stream()
-            .map(result -> {
-                Review review = (Review) result[0];
-                String username = (String) result[1];
-                return new ReviewDTO(review, username);
-            })
-            .collect(Collectors.toList());
-    }
-
+	    public List<ReviewDTO> getReviewsByRestaurantId(Integer rid) {
+	        List<Object[]> results = reviewRepository.findByRestaurantRidWithUsername(rid);
+	        return results.stream()
+	            .map(result -> {
+	                Review review = (Review) result[0];
+	                String username = (String) result[1];
+	                return new ReviewDTO(review, username);
+	            })
+	            .collect(Collectors.toList());
+	    }
     public Review updateReview(Integer reviewid, Review review) {
         Review existingReview = reviewRepository.findById(reviewid)
             .orElseThrow(() -> 

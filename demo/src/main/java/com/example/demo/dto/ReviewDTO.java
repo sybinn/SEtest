@@ -42,7 +42,7 @@ public class ReviewDTO {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+    	return imageUrl != null ? "/images/" + imageUrl : null;
     }
 
     public void setImageUrl(String imageUrl) {
@@ -56,4 +56,5 @@ public class ReviewDTO {
     public void setUsername(String username) {
         this.username = username;
     }
+    
 }

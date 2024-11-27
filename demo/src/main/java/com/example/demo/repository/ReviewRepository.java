@@ -12,7 +12,7 @@ import com.example.demo.entity.Review;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByRestaurantRid(Integer rid);
-    @Query("SELECT r, u.username FROM Review r LEFT JOIN user_info u ON r.userid = u.id WHERE r.restaurant.rid = :rid")
-    List<Object[]> findByRestaurantRidWithUsername(@Param("rid") Integer rid);
     
+    @Query("SELECT r, u.username FROM Review r LEFT JOIN User u ON r.userid = u.id WHERE r.restaurant.rid = :rid")
+    List<Object[]> findByRestaurantRidWithUsername(@Param("rid") Integer rid);
 }
