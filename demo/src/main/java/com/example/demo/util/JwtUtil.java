@@ -29,17 +29,20 @@ public class JwtUtil {
     public String validateTokenAndGetUsername(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY) // 서명 키 설정
+                    .setSigningKey(SECRET_KEY)
                     .build()
-                    .parseClaimsJws(token) // 토큰 파싱 및 검증
-                    .getBody(); // 클레임 정보 가져오기
-
-            // 토큰의 subject(사용자 이름) 반환
+                    .parseClaimsJws(token)
+                    .getBody();
+            
+            Date expiration = claims.getExpiration();
+            if (expiration != null && expiration.before(new Date())) {
+                return null;
+            }
+            if (claims.getExpiration().before(new Date())) {
+                return null;
+            }
             return claims.getSubject();
         } catch (Exception e) {
-            // 토큰 검증 실패 시 null 반환
-            System.err.println("JWT 검증 실패: " + e.getMessage());
             return null;
         }
-    }
-}
+    }}

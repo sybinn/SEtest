@@ -56,7 +56,8 @@ public class ReviewController {
         
         if (image != null && !image.isEmpty()) {
             String filename = storageService.store(image);
-            review.setImageUrl(filename);
+            String imageUrl = "/uploads/" + filename;
+            review.setImageUrl(imageUrl);
         }
         
         Review savedReview = reviewService.saveReview(review, username);
@@ -65,9 +66,11 @@ public class ReviewController {
 
     // 특정 식당의 모든 리뷰 조회
     @GetMapping("/restaurant/{rid}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByRestaurant(@PathVariable("rid") Integer rid) {
+    public ResponseEntity<List<ReviewDTO>> 
+    getReviewsByRestaurant(@PathVariable("rid") Integer rid) {
         try {
-            List<ReviewDTO> reviews = reviewService.getReviewsByRestaurantId(rid);
+            List<ReviewDTO> reviews = 
+            		reviewService.getReviewsByRestaurantId(rid);
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

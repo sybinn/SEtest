@@ -42,7 +42,7 @@ public class ReviewDTO {
     }
 
     public String getImageUrl() {
-    	return imageUrl != null ? "/images/" + imageUrl : null;
+        return imageUrl != null ?  imageUrl : null;
     }
 
     public void setImageUrl(String imageUrl) {

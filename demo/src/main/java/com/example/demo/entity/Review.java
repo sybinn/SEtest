@@ -10,7 +10,7 @@ public class Review {
     private Integer reviewstar;
     private String content;
     
-    @Column(name = "imageUrl")
+    @Column(name = "image_url")
     private String imageUrl;
     
     @Column(name = "userid", insertable = false, updatable = false)
