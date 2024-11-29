@@ -79,13 +79,25 @@ public class ReviewController {
 
     // 리뷰 수정
     @PutMapping("/{reviewid}")
-    public ResponseEntity<Review> updateReview(@PathVariable("reviewid") Integer reviewid, 
-                                             @RequestBody Review review) {
+    public ResponseEntity<?> updateReview(
+            @PathVariable("reviewid") Integer reviewid,
+            @RequestParam("reviewstar") Integer reviewstar,
+            @RequestParam("content") String content,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestHeader("Authorization") String token) {
+        
         try {
-            Review updatedReview = reviewService.updateReview(reviewid, review);
-            return ResponseEntity.ok(updatedReview);
+            String username = jwtutil.validateTokenAndGetUsername(token.substring(7));
+            if (username == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            Review updatedReview = reviewService.updateReview(reviewid, reviewstar, content, image, username);
+            return ResponseEntity.ok(new ReviewDTO(updatedReview, username));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 수정에 실패했습니다.");
         }
     }
 

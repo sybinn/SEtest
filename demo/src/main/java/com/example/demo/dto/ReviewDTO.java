@@ -17,6 +17,12 @@ public class ReviewDTO {
         this.username = username;
     }
 
+    public ReviewDTO(Integer reviewstar, String content, String imageUrl) {
+        this.reviewstar = reviewstar;
+        this.content = content;
+        this.imageUrl = imageUrl;
+    }
+    
     public Integer getReviewid() {
         return reviewid;
     }

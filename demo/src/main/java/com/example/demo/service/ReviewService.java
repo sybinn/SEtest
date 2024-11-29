@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.ResourceNotFoundException;
 import com.example.demo.dto.ReviewDTO;
@@ -18,6 +19,9 @@ public class ReviewService {
 
 	 @Autowired
 	    private ReviewRepository reviewRepository;
+	 
+	 @Autowired
+	 private StorageService storageService;
 	    
 	    @Autowired
 	    private UserRepository userRepository;
@@ -39,17 +43,34 @@ public class ReviewService {
 	            })
 	            .collect(Collectors.toList());
 	    }
-    public Review updateReview(Integer reviewid, Review review) {
-        Review existingReview = reviewRepository.findById(reviewid)
-            .orElseThrow(() -> 
-            new ResourceNotFoundException("Review not found"));
-        
-        existingReview.setReviewstar(review.getReviewstar());
-        existingReview.setContent(review.getContent());
-        
-        return reviewRepository.save(existingReview);
-    }
+	    
+	    public Review updateReview(Integer reviewid, Integer reviewstar, String content, 
+                MultipartFile image, String username) {
+Review existingReview = reviewRepository.findById(reviewid)
+.orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
+User user = userRepository.findByUsername(username)
+.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+if (!existingReview.getUser().getUsername().equals(username)) {
+throw new ResourceNotFoundException("Unauthorized access");
+}
+
+// Restaurant 정보 유지
+Restaurant restaurant = existingReview.getRestaurant();
+
+existingReview.setReviewstar(reviewstar);
+existingReview.setContent(content);
+existingReview.setRestaurant(restaurant);
+
+if (image != null && !image.isEmpty()) {
+String filename = storageService.store(image);
+String imageUrl = "/uploads/" + filename;
+existingReview.setImageUrl(imageUrl);
+}
+
+return reviewRepository.save(existingReview);
+}
     public void deleteReview(Integer reviewid) {
         reviewRepository.deleteById(reviewid);
     }
